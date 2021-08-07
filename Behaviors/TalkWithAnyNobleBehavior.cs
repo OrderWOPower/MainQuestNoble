@@ -40,20 +40,12 @@ namespace MainQuestNoble.Behaviors
             TextObject failedTrackingTextObject = new TextObject("Failed to track position of {HERO.LINK}!", null);
             StringHelpers.SetCharacterProperties("HERO", characterObject, startedTrackingTextObject);
             StringHelpers.SetCharacterProperties("HERO", characterObject, failedTrackingTextObject);
-            MainQuestNobleTrackerVM.StartedTrackingText = startedTrackingTextObject.ToString();
-            MainQuestNobleTrackerVM.FailedTrackingText = failedTrackingTextObject.ToString();
-            MainQuestNobleTrackerVM.TalkedToAnyNoble = true;
-            MainQuestNobleTrackerVM.PartyToTrack = null;
-            MainQuestNobleTrackerVM.ArmyToTrack = null;
-            MainQuestNobleNameplateVM.NobleToTrack = characterObject.HeroObject;
-            if (characterObject.HeroObject.PartyBelongedTo?.Army == null)
-            {
-                MainQuestNobleTrackerVM.PartyToTrack = characterObject.HeroObject.PartyBelongedTo;
-            }
-            else
-            {
-                MainQuestNobleTrackerVM.ArmyToTrack = characterObject.HeroObject.PartyBelongedTo.Army;
-            }
+            MobileParty partyToTrack = characterObject.HeroObject.PartyBelongedTo;
+            Army armyToTrack = characterObject.HeroObject.PartyBelongedTo?.Army;
+            string startedTrackingText = startedTrackingTextObject.ToString();
+            string failedTrackingText = failedTrackingTextObject.ToString();
+            _ = new MainQuestNobleTrackerVM(armyToTrack == null ? partyToTrack : null, armyToTrack ?? null, startedTrackingText, failedTrackingText, true, false);
+            _ = new MainQuestNobleNameplateVM(characterObject.HeroObject);
         }
     }
 }

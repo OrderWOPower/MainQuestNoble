@@ -6,7 +6,6 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using SandBox.ViewModelCollection.MobilePartyTracker;
-using MainQuestNoble.Behaviors;
 
 namespace MainQuestNoble.ViewModels
 {
@@ -15,13 +14,12 @@ namespace MainQuestNoble.ViewModels
     {
         [HarmonyPostfix]
         [HarmonyPatch(MethodType.Constructor, new Type[] { typeof(Camera), typeof(Action<Vec2>) })]
-        public static void Postfix1(ref Camera ____mapCamera, ref Action<Vec2> ____fastMoveCameraToPosition, MobilePartyTrackerVM __instance)
+        public static void Postfix1(Camera ____mapCamera, Action<Vec2> ____fastMoveCameraToPosition, MobilePartyTrackerVM __instance)
         {
             _mapCamera = ____mapCamera;
             _fastMoveCameraToPosition = ____fastMoveCameraToPosition;
             _mobilePartyTracker = __instance;
             Init();
-            CampaignEvents.ConversationEnded.AddNonSerializedListener(__instance, new Action<CharacterObject>(OnConversationEnded));
         }
         [HarmonyPostfix]
         [HarmonyPatch("OnPartyDestroyed")]
@@ -51,32 +49,42 @@ namespace MainQuestNoble.ViewModels
                 Init();
             }
         }
-        private static void Init() => RemoveAndAdd(PartyToTrack, ArmyToTrack);
+        public MainQuestNobleTrackerVM(MobileParty partyToTrack, Army armyToTrack, string startedTrackingText, string failedTrackingText, bool talkedToAnyNoble, bool talkedToQuestNoble)
+        {
+            PartyToTrack = partyToTrack;
+            ArmyToTrack = armyToTrack;
+            _startedTrackingText = startedTrackingText;
+            _failedTrackingText = failedTrackingText;
+            _talkedToAnyNoble = talkedToAnyNoble;
+            _talkedToQuestNoble = talkedToQuestNoble;
+            CampaignEvents.ConversationEnded.AddNonSerializedListener(this, new Action<CharacterObject>(OnConversationEnded));
+        }
         // If a quest noble can be tracked, start tracking the quest noble after talking to any non-quest noble. If not, do nothing.
         // Stop tracking the quest noble after talking to any quest noble.
-        private static void OnConversationEnded(CharacterObject character)
+        private void OnConversationEnded(CharacterObject character)
         {
-            if (TalkedToAnyNoble)
+            if (_talkedToAnyNoble)
             {
                 if (PartyToTrack != null || ArmyToTrack != null)
                 {
                     InformationManager.DisplayMessage(new InformationMessage("Stopped tracking positions of main quest nobles!"));
-                    InformationManager.DisplayMessage(new InformationMessage(StartedTrackingText));
+                    InformationManager.DisplayMessage(new InformationMessage(_startedTrackingText));
                     Init();
                 }
                 else
                 {
-                    InformationManager.DisplayMessage(new InformationMessage(FailedTrackingText));
+                    InformationManager.DisplayMessage(new InformationMessage(_failedTrackingText));
                 }
-                TalkedToAnyNoble = false;
+                _talkedToAnyNoble = false;
             }
-            else if (TalkedToQuestNoble)
+            else if (_talkedToQuestNoble)
             {
                 InformationManager.DisplayMessage(new InformationMessage("Stopped tracking positions of main quest nobles!"));
                 Init();
-                TalkedToQuestNoble = false;
+                _talkedToQuestNoble = false;
             }
         }
+        private static void Init() => RemoveAndAdd(PartyToTrack, ArmyToTrack);
         // Update the party/army to track.
         private static void RemoveAndAdd(MobileParty party, Army army)
         {
@@ -98,14 +106,14 @@ namespace MainQuestNoble.ViewModels
                 _mobilePartyTracker.Trackers.Add(new MobilePartyTrackItemVM(army, _mapCamera, _fastMoveCameraToPosition));
             }
         }
-        public static string StartedTrackingText { get; set; }
-        public static string FailedTrackingText { get; set; }
-        public static bool TalkedToAnyNoble { get; set; }
-        public static bool TalkedToQuestNoble { get; set; }
-        public static MobileParty PartyToTrack { get => MainQuestNobleBehavior.TrackedParty; set => MainQuestNobleBehavior.TrackedParty = value; }
-        public static Army ArmyToTrack { get => MainQuestNobleBehavior.TrackedArmy; set => MainQuestNobleBehavior.TrackedArmy = value; }
+        public static MobileParty PartyToTrack { get; set; }
+        public static Army ArmyToTrack { get; set; }
         private static Camera _mapCamera;
         private static Action<Vec2> _fastMoveCameraToPosition;
         private static MobilePartyTrackerVM _mobilePartyTracker;
+        private string _startedTrackingText;
+        private string _failedTrackingText;
+        private bool _talkedToAnyNoble;
+        private bool _talkedToQuestNoble;
     }
 }

@@ -2,7 +2,6 @@
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using SandBox.ViewModelCollection.Nameplate;
-using MainQuestNoble.Behaviors;
 
 namespace MainQuestNoble.ViewModels
 {
@@ -29,6 +28,7 @@ namespace MainQuestNoble.ViewModels
                 }
             }
         }
-        public static Hero NobleToTrack { get => MainQuestNobleBehavior.TrackedNoble; set => MainQuestNobleBehavior.TrackedNoble = value; }
+        public MainQuestNobleNameplateVM(Hero nobleToTrack) => NobleToTrack = nobleToTrack;
+        public static Hero NobleToTrack { get; set; }
     }
 }

@@ -12,10 +12,8 @@ namespace MainQuestNoble.Behaviors
         public static MethodBase TargetMethod() => AccessTools.Method(AccessTools.Inner(typeof(BannerInvestigationQuestBehavior), "BannerInvestigationQuest"), "talk_with_quest_noble_consequence");
         private static void Postfix()
         {
-            MainQuestNobleTrackerVM.TalkedToQuestNoble = true;
-            MainQuestNobleTrackerVM.PartyToTrack = null;
-            MainQuestNobleTrackerVM.ArmyToTrack = null;
-            MainQuestNobleNameplateVM.NobleToTrack = null;
+            _ = new MainQuestNobleTrackerVM(null, null, null, null, false, true);
+            _ = new MainQuestNobleNameplateVM(null);
         }
     }
 }
