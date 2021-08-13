@@ -61,7 +61,7 @@ namespace MainQuestNoble.ViewModels
         }
         // If a quest noble can be tracked, start tracking the quest noble after talking to any non-quest noble. If not, do nothing.
         // Stop tracking the quest noble after talking to any quest noble.
-        private void OnConversationEnded(CharacterObject character)
+        public void OnConversationEnded(CharacterObject character)
         {
             if (_talkedToAnyNoble)
             {

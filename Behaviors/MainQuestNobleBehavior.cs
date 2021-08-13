@@ -25,7 +25,7 @@ namespace MainQuestNoble.Behaviors
                 InformationManager.DisplayMessage(new InformationMessage("Exception at MainQuestNobleBehavior.SyncData(): " + ex.Message));
             }
         }
-        private void OnGameLoaded(CampaignGameStarter campaignGameStarter)
+        public void OnGameLoaded(CampaignGameStarter campaignGameStarter)
         {
             _ = new MainQuestNobleTrackerVM(_partyToTrack, _armyToTrack, null, null, false, false);
             _ = new MainQuestNobleNameplateVM(_nobleToTrack);
