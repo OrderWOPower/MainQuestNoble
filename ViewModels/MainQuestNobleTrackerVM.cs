@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
@@ -18,7 +18,7 @@ namespace MainQuestNoble.ViewModels
         {
             _mapCamera = ____mapCamera;
             _fastMoveCameraToPosition = ____fastMoveCameraToPosition;
-            _mobilePartyTracker = __instance;
+            _mobilePartyTrackerVM = __instance;
             Init();
         }
         [HarmonyPostfix]
@@ -88,29 +88,29 @@ namespace MainQuestNoble.ViewModels
         // Update the party/army to track.
         private static void RemoveAndAdd(MobileParty party, Army army)
         {
-            for (int i = 0; i < _mobilePartyTracker.Trackers.Count; i++)
+            for (int i = 0; i < _mobilePartyTrackerVM.Trackers.Count; i++)
             {
-                if (!Clan.PlayerClan.WarPartyComponents.Contains(_mobilePartyTracker.Trackers[i].TrackedParty?.WarPartyComponent))
+                if (!Clan.PlayerClan.WarPartyComponents.Contains(_mobilePartyTrackerVM.Trackers[i].TrackedParty?.WarPartyComponent))
                 {
-                    _mobilePartyTracker.Trackers.RemoveAt(i);
+                    _mobilePartyTrackerVM.Trackers.RemoveAt(i);
                 }
             }
-            MobilePartyTrackItemVM mobilePartyTrackItem = _mobilePartyTracker.Trackers.FirstOrDefault((MobilePartyTrackItemVM t) => t.TrackedArmy != null && Clan.PlayerClan.Kingdom == null || (Clan.PlayerClan.Kingdom != null && !Clan.PlayerClan.Kingdom.Armies.Contains(t.TrackedArmy)));
-            _mobilePartyTracker.Trackers.Remove(mobilePartyTrackItem);
+            MobilePartyTrackItemVM mobilePartyTrackItemVM = _mobilePartyTrackerVM.Trackers.FirstOrDefault((MobilePartyTrackItemVM t) => t.TrackedArmy != null && Clan.PlayerClan.Kingdom == null || (Clan.PlayerClan.Kingdom != null && !Clan.PlayerClan.Kingdom.Armies.Contains(t.TrackedArmy)));
+            _mobilePartyTrackerVM.Trackers.Remove(mobilePartyTrackItemVM);
             if (party != null)
             {
-                _mobilePartyTracker.Trackers.Add(new MobilePartyTrackItemVM(party, _mapCamera, _fastMoveCameraToPosition));
+                _mobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(party, _mapCamera, _fastMoveCameraToPosition));
             }
             else if (army != null)
             {
-                _mobilePartyTracker.Trackers.Add(new MobilePartyTrackItemVM(army, _mapCamera, _fastMoveCameraToPosition));
+                _mobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(army, _mapCamera, _fastMoveCameraToPosition));
             }
         }
         public static MobileParty PartyToTrack { get; set; }
         public static Army ArmyToTrack { get; set; }
         private static Camera _mapCamera;
         private static Action<Vec2> _fastMoveCameraToPosition;
-        private static MobilePartyTrackerVM _mobilePartyTracker;
+        private static MobilePartyTrackerVM _mobilePartyTrackerVM;
         private string _startedTrackingText;
         private string _failedTrackingText;
         private bool _talkedToAnyNoble;
