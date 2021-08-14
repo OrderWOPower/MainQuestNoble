@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using SandBox.ViewModelCollection.Nameplate;
@@ -13,18 +13,18 @@ namespace MainQuestNoble.ViewModels
         {
             if (__instance.IsInRange)
             {
-                SettlementEventsVM settlementEvents = __instance.SettlementEvents;
-                SettlementNameplateEventItemVM settlementNameplateEventItem = settlementEvents.EventsList.FirstOrDefault((SettlementNameplateEventItemVM e) => e.EventType == SettlementNameplateEventItemVM.SettlementEventType.AvailableQuest);
+                SettlementEventsVM settlementEventsVM = __instance.SettlementEvents;
+                SettlementNameplateEventItemVM settlementNameplateEventItemVM = settlementEventsVM.EventsList.FirstOrDefault((SettlementNameplateEventItemVM e) => e.EventType == SettlementNameplateEventItemVM.SettlementEventType.AvailableQuest);
                 if (__instance.Settlement == NobleToTrack?.CurrentSettlement && !NobleToTrack.IsPrisoner)
                 {
-                    if (!settlementEvents.EventsList.Contains(settlementNameplateEventItem))
+                    if (!settlementEventsVM.EventsList.Contains(settlementNameplateEventItemVM))
                     {
-                        settlementEvents.EventsList.Add(new SettlementNameplateEventItemVM(SettlementNameplateEventItemVM.SettlementEventType.AvailableQuest));
+                        settlementEventsVM.EventsList.Add(new SettlementNameplateEventItemVM(SettlementNameplateEventItemVM.SettlementEventType.AvailableQuest));
                     }
                 }
                 else
                 {
-                    settlementEvents.EventsList.Remove(settlementNameplateEventItem);
+                    settlementEventsVM.EventsList.Remove(settlementNameplateEventItemVM);
                 }
             }
         }
