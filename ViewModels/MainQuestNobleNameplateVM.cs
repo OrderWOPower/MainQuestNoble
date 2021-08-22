@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using SandBox.ViewModelCollection.Nameplate;

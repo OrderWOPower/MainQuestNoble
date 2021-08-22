@@ -76,8 +76,7 @@
     <Compile Include="MainQuestNobleSubModule.cs" />
     <Compile Include="ViewModels\MainQuestNobleTrackerVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Behaviors\TalkWithAnyNobleBehavior.cs" />
-    <Compile Include="Behaviors\TalkWithQuestNobleBehavior.cs" />
+    <Compile Include="Behaviors\TalkWithNobleBehavior.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
