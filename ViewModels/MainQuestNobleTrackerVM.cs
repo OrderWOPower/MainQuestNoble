@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
@@ -14,11 +14,11 @@ namespace MainQuestNoble.ViewModels
     {
         [HarmonyPostfix]
         [HarmonyPatch(MethodType.Constructor, new Type[] { typeof(Camera), typeof(Action<Vec2>) })]
-        public static void Postfix1(Camera ____mapCamera, Action<Vec2> ____fastMoveCameraToPosition, MobilePartyTrackerVM __instance)
+        public static void Postfix1(MobilePartyTrackerVM __instance, Camera ____mapCamera, Action<Vec2> ____fastMoveCameraToPosition)
         {
+            _mobilePartyTrackerVM = __instance;
             _mapCamera = ____mapCamera;
             _fastMoveCameraToPosition = ____fastMoveCameraToPosition;
-            _mobilePartyTrackerVM = __instance;
             Init();
         }
         [HarmonyPostfix]
