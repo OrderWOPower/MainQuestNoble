@@ -108,9 +108,9 @@ namespace MainQuestNoble.ViewModels
         }
         public static MobileParty PartyToTrack { get; set; }
         public static Army ArmyToTrack { get; set; }
+        private static MobilePartyTrackerVM _mobilePartyTrackerVM;
         private static Camera _mapCamera;
         private static Action<Vec2> _fastMoveCameraToPosition;
-        private static MobilePartyTrackerVM _mobilePartyTrackerVM;
         private string _startedTrackingText;
         private string _failedTrackingText;
         private bool _talkedToAnyNoble;
