@@ -36,21 +36,18 @@ namespace MainQuestNoble.Behaviors
         [HarmonyPatch("talk_with_quest_noble_consequence")]
         private static void Postfix()
         {
-            _ = new MainQuestNobleTrackerVM(null, null, null, null, false, true);
+            _ = new MainQuestNobleTrackerVM(null, null, null, false, true);
             _ = new MainQuestNobleNameplateVM(null);
         }
         // Set the party/army to track and the noble to track. Set the noble's name to display in the debug message.
         public static void TrackNoble(CharacterObject characterObject)
         {
-            TextObject startedTrackingTextObject = new TextObject("Started tracking position of {HERO.LINK}!", null);
-            TextObject failedTrackingTextObject = new TextObject("Failed to track position of {HERO.LINK}!", null);
-            StringHelpers.SetCharacterProperties("HERO", characterObject, startedTrackingTextObject);
-            StringHelpers.SetCharacterProperties("HERO", characterObject, failedTrackingTextObject);
-            MobileParty partyToTrack = characterObject.HeroObject.PartyBelongedTo;
-            Army armyToTrack = characterObject.HeroObject.PartyBelongedTo?.Army;
-            string startedTrackingText = startedTrackingTextObject.ToString();
-            string failedTrackingText = failedTrackingTextObject.ToString();
-            _ = new MainQuestNobleTrackerVM(armyToTrack == null ? partyToTrack : null, armyToTrack ?? null, startedTrackingText, failedTrackingText, true, false);
+            TextObject textObject = new TextObject("{HERO.LINK}", null);
+            StringHelpers.SetCharacterProperties("HERO", characterObject, textObject);
+            MobileParty party = characterObject.HeroObject.PartyBelongedTo;
+            Army army = party?.Army;
+            string text = textObject.ToString();
+            _ = new MainQuestNobleTrackerVM(party, army, text, true, false);
             _ = new MainQuestNobleNameplateVM(characterObject.HeroObject);
         }
     }

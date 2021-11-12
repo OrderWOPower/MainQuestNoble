@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
@@ -49,12 +49,11 @@ namespace MainQuestNoble.ViewModels
                 Init();
             }
         }
-        public MainQuestNobleTrackerVM(MobileParty partyToTrack, Army armyToTrack, string startedTrackingText, string failedTrackingText, bool talkedToAnyNoble, bool talkedToQuestNoble)
+        public MainQuestNobleTrackerVM(MobileParty partyToTrack, Army armyToTrack, string nobleName, bool talkedToAnyNoble, bool talkedToQuestNoble)
         {
             PartyToTrack = partyToTrack;
             ArmyToTrack = armyToTrack;
-            _startedTrackingText = startedTrackingText;
-            _failedTrackingText = failedTrackingText;
+            _nobleName = nobleName;
             _talkedToAnyNoble = talkedToAnyNoble;
             _talkedToQuestNoble = talkedToQuestNoble;
             CampaignEvents.ConversationEnded.AddNonSerializedListener(this, new Action<CharacterObject>(OnConversationEnded));
@@ -65,15 +64,15 @@ namespace MainQuestNoble.ViewModels
         {
             if (_talkedToAnyNoble)
             {
-                if (PartyToTrack != null || ArmyToTrack != null)
+                if (PartyToTrack != null)
                 {
                     InformationManager.DisplayMessage(new InformationMessage("Stopped tracking positions of main quest nobles!"));
-                    InformationManager.DisplayMessage(new InformationMessage(_startedTrackingText));
+                    InformationManager.DisplayMessage(new InformationMessage("Started tracking position of " + _nobleName + "!"));
                     Init();
                 }
                 else
                 {
-                    InformationManager.DisplayMessage(new InformationMessage(_failedTrackingText));
+                    InformationManager.DisplayMessage(new InformationMessage("Failed to track position of " + _nobleName + "!"));
                 }
                 _talkedToAnyNoble = false;
             }
@@ -99,11 +98,14 @@ namespace MainQuestNoble.ViewModels
             _mobilePartyTrackerVM.Trackers.Remove(mobilePartyTrackItemVM);
             if (party != null)
             {
-                _mobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(party, _mapCamera, _fastMoveCameraToPosition));
-            }
-            else if (army != null)
-            {
-                _mobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(army, _mapCamera, _fastMoveCameraToPosition));
+                if (army == null || (army != null && !army.LeaderPartyAndAttachedParties.Contains(party)))
+                {
+                    _mobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(party, _mapCamera, _fastMoveCameraToPosition));
+                }
+                else
+                {
+                    _mobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(army, _mapCamera, _fastMoveCameraToPosition));
+                }
             }
         }
         public static MobileParty PartyToTrack { get; set; }
@@ -111,8 +113,7 @@ namespace MainQuestNoble.ViewModels
         private static MobilePartyTrackerVM _mobilePartyTrackerVM;
         private static Camera _mapCamera;
         private static Action<Vec2> _fastMoveCameraToPosition;
-        private string _startedTrackingText;
-        private string _failedTrackingText;
+        private string _nobleName;
         private bool _talkedToAnyNoble;
         private bool _talkedToQuestNoble;
     }

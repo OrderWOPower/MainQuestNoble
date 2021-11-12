@@ -27,7 +27,7 @@ namespace MainQuestNoble.Behaviors
         }
         public void OnGameLoaded(CampaignGameStarter campaignGameStarter)
         {
-            _ = new MainQuestNobleTrackerVM(_partyToTrack, _armyToTrack, null, null, false, false);
+            _ = new MainQuestNobleTrackerVM(_partyToTrack, _armyToTrack, null, false, false);
             _ = new MainQuestNobleNameplateVM(_nobleToTrack);
         }
         public void OnTick(float dt)
