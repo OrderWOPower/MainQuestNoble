@@ -72,12 +72,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Behaviors\MainQuestNobleBehavior.cs" />
-    <Compile Include="ViewModels\MainQuestNobleNameplateVM.cs" />
+    <Compile Include="MainQuestNobleBehavior.cs" />
     <Compile Include="MainQuestNobleSubModule.cs" />
-    <Compile Include="ViewModels\MainQuestNobleTrackerVM.cs" />
+    <Compile Include="MainQuestNobleTrackerVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Behaviors\TalkWithNobleBehavior.cs" />
+    <Compile Include="TalkWithNobleBehavior.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
