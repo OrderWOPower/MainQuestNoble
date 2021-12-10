@@ -7,7 +7,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using SandBox.ViewModelCollection.MobilePartyTracker;
 
-namespace MainQuestNoble.ViewModels
+namespace MainQuestNoble
 {
     [HarmonyPatch(typeof(MobilePartyTrackerVM), MethodType.Constructor, new Type[] { typeof(Camera), typeof(Action<Vec2>) })]
     [HarmonyPriority(Priority.First)]

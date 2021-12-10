@@ -2,7 +2,6 @@
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
-using MainQuestNoble.Behaviors;
 
 namespace MainQuestNoble
 {

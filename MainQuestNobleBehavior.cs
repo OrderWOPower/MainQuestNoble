@@ -5,9 +5,8 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using SandBox.ViewModelCollection.MobilePartyTracker;
-using MainQuestNoble.ViewModels;
 
-namespace MainQuestNoble.Behaviors
+namespace MainQuestNoble
 {
     [HarmonyPatch(typeof(MobilePartyTrackerVM), MethodType.Constructor, new Type[] { typeof(Camera), typeof(Action<Vec2>) })]
     public class MainQuestNobleBehavior : CampaignBehaviorBase

@@ -7,9 +7,8 @@ using Helpers;
 using StoryMode.Behaviors.Quests.FirstPhase;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Localization;
-using MainQuestNoble.ViewModels;
 
-namespace MainQuestNoble.Behaviors
+namespace MainQuestNoble
 {
     [HarmonyPatch(typeof(BannerInvestigationQuest))]
     public class TalkWithNobleBehavior
