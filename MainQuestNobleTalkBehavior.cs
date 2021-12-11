@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 using Helpers;
-using StoryMode.Behaviors.Quests.FirstPhase;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Localization;
+using StoryMode.Behaviors.Quests.FirstPhase;
 
 namespace MainQuestNoble
 {
@@ -33,10 +33,7 @@ namespace MainQuestNoble
             return codes;
         }
         [HarmonyPatch("talk_with_quest_noble_consequence")]
-        private static void Postfix()
-        {
-            _ = new MainQuestNobleTrackerVM(null, null, null, false, true);
-        }
+        private static void Postfix() => _ = new MainQuestNobleVM(null, null, null, false, true);
         // Set the party/army to track and the noble to track. Set the noble's name to display in the debug message.
         public static void TrackNoble(CharacterObject characterObject)
         {
@@ -45,7 +42,7 @@ namespace MainQuestNoble
             MobileParty party = characterObject.HeroObject.PartyBelongedTo;
             Army army = party?.Army;
             string text = textObject.ToString();
-            _ = new MainQuestNobleTrackerVM(party, army, text, true, false);
+            _ = new MainQuestNobleVM(party, army, text, true, false);
         }
     }
 }
