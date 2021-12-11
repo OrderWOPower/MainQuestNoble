@@ -11,7 +11,7 @@ namespace MainQuestNoble
     [HarmonyPatch(typeof(MobilePartyTrackerVM), MethodType.Constructor, new Type[] { typeof(Camera), typeof(Action<Vec2>) })]
     public class MainQuestNobleBehavior : CampaignBehaviorBase
     {
-        public static void Postfix() => _ = new MainQuestNobleTrackerVM(_partyToTrack, _armyToTrack, null, false, false);
+        public static void Postfix() => _ = new MainQuestNobleVM(_partyToTrack, _armyToTrack, null, false, false);
         public override void RegisterEvents()
         {
             CampaignEvents.ConversationEnded.AddNonSerializedListener(this, new Action<CharacterObject>(OnConversationEnded));
@@ -33,8 +33,8 @@ namespace MainQuestNoble
         public void OnTick(float dt) => Update();
         public void Update()
         {
-            _partyToTrack = MainQuestNobleTrackerVM.PartyToTrack;
-            _armyToTrack = MainQuestNobleTrackerVM.ArmyToTrack;
+            _partyToTrack = MainQuestNobleVM.PartyToTrack;
+            _armyToTrack = MainQuestNobleVM.ArmyToTrack;
         }
         private static MobileParty _partyToTrack;
         private static Army _armyToTrack;

@@ -74,9 +74,9 @@
   <ItemGroup>
     <Compile Include="MainQuestNobleBehavior.cs" />
     <Compile Include="MainQuestNobleSubModule.cs" />
-    <Compile Include="MainQuestNobleTrackerVM.cs" />
+    <Compile Include="MainQuestNobleVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TalkWithNobleBehavior.cs" />
+    <Compile Include="MainQuestNobleTalkBehavior.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
