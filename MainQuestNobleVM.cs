@@ -10,9 +10,9 @@ using SandBox.ViewModelCollection.MobilePartyTracker;
 namespace MainQuestNoble
 {
     [HarmonyPatch(typeof(MobilePartyTrackerVM), MethodType.Constructor, new Type[] { typeof(Camera), typeof(Action<Vec2>) })]
-    [HarmonyPriority(Priority.First)]
     public class MainQuestNobleVM
     {
+        [HarmonyPriority(Priority.First)]
         public static void Postfix(MobilePartyTrackerVM __instance, Camera ____mapCamera, Action<Vec2> ____fastMoveCameraToPosition)
         {
             _mobilePartyTrackerVM = __instance;
