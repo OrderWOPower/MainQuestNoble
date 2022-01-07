@@ -1,11 +1,11 @@
-﻿using System;
+﻿using HarmonyLib;
+using SandBox.ViewModelCollection.MobilePartyTracker;
+using System;
 using System.Linq;
-using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
-using SandBox.ViewModelCollection.MobilePartyTracker;
 
 namespace MainQuestNoble
 {
