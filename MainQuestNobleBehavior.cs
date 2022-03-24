@@ -2,6 +2,7 @@
 using SandBox.ViewModelCollection.MobilePartyTracker;
 using System;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -11,12 +12,17 @@ namespace MainQuestNoble
     [HarmonyPatch(typeof(MobilePartyTrackerVM), MethodType.Constructor, new Type[] { typeof(Camera), typeof(Action<Vec2>) })]
     public class MainQuestNobleBehavior : CampaignBehaviorBase
     {
+        private static MobileParty _partyToTrack;
+        private static Army _armyToTrack;
+
         public static void Postfix() => _ = new MainQuestNobleVM(_partyToTrack, _armyToTrack, null, false, false);
+
         public override void RegisterEvents()
         {
             CampaignEvents.ConversationEnded.AddNonSerializedListener(this, new Action<CharacterObject>(OnConversationEnded));
             CampaignEvents.TickEvent.AddNonSerializedListener(this, new Action<float>(OnTick));
         }
+
         public override void SyncData(IDataStore dataStore)
         {
             try
@@ -26,17 +32,18 @@ namespace MainQuestNoble
             }
             catch (Exception ex)
             {
-                InformationManager.DisplayMessage(new InformationMessage("Exception at MainQuestNobleBehavior.SyncData(): " + ex.Message));
+                InformationManager.DisplayMessage(new InformationMessage(ex.Message + "\r\n" + ex.StackTrace.Substring(0, ex.StackTrace.IndexOf("\r\n"))));
             }
         }
-        public void OnConversationEnded(CharacterObject character) => Update();
-        public void OnTick(float dt) => Update();
-        public void Update()
+
+        private void OnConversationEnded(CharacterObject character) => UpdatePartyAndArmyToTrack();
+
+        private void OnTick(float dt) => UpdatePartyAndArmyToTrack();
+
+        private void UpdatePartyAndArmyToTrack()
         {
             _partyToTrack = MainQuestNobleVM.PartyToTrack;
             _armyToTrack = MainQuestNobleVM.ArmyToTrack;
         }
-        private static MobileParty _partyToTrack;
-        private static Army _armyToTrack;
     }
 }

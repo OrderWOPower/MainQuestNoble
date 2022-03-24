@@ -9,6 +9,7 @@ namespace MainQuestNoble
     public class MainQuestNobleSubModule : MBSubModuleBase
     {
         protected override void OnSubModuleLoad() => new Harmony("mod.bannerlord.mainquestnoble").PatchAll();
+
         protected override void OnGameStart(Game game, IGameStarter gameStarter)
         {
             if (game.GameType is Campaign)
