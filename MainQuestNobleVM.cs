@@ -1,67 +1,63 @@
-﻿using HarmonyLib;
-using SandBox.ViewModelCollection.MobilePartyTracker;
+﻿using SandBox.ViewModelCollection.MobilePartyTracker;
 using System;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
-using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 
 namespace MainQuestNoble
 {
-    [HarmonyPatch(typeof(MobilePartyTrackerVM), MethodType.Constructor, new Type[] { typeof(Camera), typeof(Action<Vec2>) })]
-    public class MainQuestNobleVM
+    public class MainQuestNobleVM : ViewModel
     {
-        private readonly string _nobleName;
-        private static MobilePartyTrackerVM _mobilePartyTrackerVM;
-        private static Camera _mapCamera;
-        private static Action<Vec2> _fastMoveCameraToPosition;
-        private bool _talkedToAnyNoble;
-        private bool _talkedToQuestNoble;
+        private MobilePartyTrackerVM _mobilePartyTrackerVM;
+        private Camera _mapCamera;
+        private Action<Vec2> _fastMoveCameraToPosition;
+        private MobileParty _partyToTrack;
+        private Army _armyToTrack;
 
-        public static MobileParty PartyToTrack { get; set; }
-
-        public static Army ArmyToTrack { get; set; }
-
-        [HarmonyPriority(Priority.First)]
-        public static void Postfix(MobilePartyTrackerVM __instance, Camera ____mapCamera, Action<Vec2> ____fastMoveCameraToPosition)
+        public MobileParty PartyToTrack
         {
-            _mobilePartyTrackerVM = __instance;
-            _mapCamera = ____mapCamera;
-            _fastMoveCameraToPosition = ____fastMoveCameraToPosition;
+            get => _partyToTrack;
+            set
+            {
+                if (value != _partyToTrack)
+                {
+                    _partyToTrack = value;
+                    OnPropertyChangedWithValue(value, "PartyToTrack");
+                }
+            }
         }
 
-        public MainQuestNobleVM(MobileParty partyToTrack, Army armyToTrack, string nobleName, bool talkedToAnyNoble, bool talkedToQuestNoble)
+        public Army ArmyToTrack
         {
-            PartyToTrack = partyToTrack;
-            ArmyToTrack = armyToTrack;
-            _nobleName = nobleName;
-            _talkedToAnyNoble = talkedToAnyNoble;
-            _talkedToQuestNoble = talkedToQuestNoble;
-            Init();
-            CampaignEvents.ConversationEnded.AddNonSerializedListener(this, new Action<CharacterObject>(OnConversationEnded));
+            get => _armyToTrack;
+            set
+            {
+                if (value != _armyToTrack)
+                {
+                    _armyToTrack = value;
+                    OnPropertyChangedWithValue(value, "ArmyToTrack");
+                }
+            }
+        }
+
+        public MainQuestNobleVM(MobilePartyTrackerVM mobilePartyTrackerVM, Camera mapCamera, Action<Vec2> fastMoveCameraToPosition)
+        {
+            _mobilePartyTrackerVM = mobilePartyTrackerVM;
+            _mapCamera = mapCamera;
+            _fastMoveCameraToPosition = fastMoveCameraToPosition;
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, new Action<MobileParty, PartyBase>(OnPartyDestroyed));
             CampaignEvents.OnPartyDisbandedEvent.AddNonSerializedListener(this, new Action<MobileParty, Settlement>(OnPartyDisbanded));
             CampaignEvents.ArmyDispersed.AddNonSerializedListener(this, new Action<Army, Army.ArmyDispersionReason, bool>(OnArmyDispersed));
         }
 
-        // If a quest noble can be tracked, start tracking the quest noble after talking to any non-quest noble. If not, do nothing.
-        // Stop tracking the quest noble after talking to any quest noble.
-        private void OnConversationEnded(CharacterObject character)
+        public void SetPartyAndArmyToTrack(MobileParty partyToTrack, Army armyToTrack)
         {
-            if (_talkedToAnyNoble)
-            {
-                InformationManager.DisplayMessage(new InformationMessage("Stopped tracking positions of main quest nobles!"));
-                InformationManager.DisplayMessage(new InformationMessage(PartyToTrack != null ? "Started tracking position of " + _nobleName + "!" : "Failed to track position of " + _nobleName + "!"));
-                _talkedToAnyNoble = false;
-            }
-            else if (_talkedToQuestNoble)
-            {
-                InformationManager.DisplayMessage(new InformationMessage("Stopped tracking positions of main quest nobles!"));
-                _talkedToQuestNoble = false;
-            }
+            PartyToTrack = partyToTrack;
+            ArmyToTrack = armyToTrack;
+            Init();
         }
 
         private void OnPartyDestroyed(MobileParty mobileParty, PartyBase arg2)
