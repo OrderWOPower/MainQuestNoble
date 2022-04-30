@@ -98,7 +98,7 @@ namespace MainQuestNoble
                     _mobilePartyTrackerVM.Trackers.RemoveAt(i);
                 }
             }
-            MobilePartyTrackItemVM mobilePartyTrackItemVM = _mobilePartyTrackerVM.Trackers.FirstOrDefault((MobilePartyTrackItemVM t) => t.TrackedArmy != null && Clan.PlayerClan.Kingdom == null || (Clan.PlayerClan.Kingdom != null && !Clan.PlayerClan.Kingdom.Armies.Contains(t.TrackedArmy)));
+            MobilePartyTrackItemVM mobilePartyTrackItemVM = _mobilePartyTrackerVM.Trackers.FirstOrDefault((MobilePartyTrackItemVM t) => Clan.PlayerClan.Kingdom == null || (Clan.PlayerClan.Kingdom != null && !Clan.PlayerClan.Kingdom.Armies.Contains(t.TrackedArmy)));
             _mobilePartyTrackerVM.Trackers.Remove(mobilePartyTrackItemVM);
             if (party != null)
             {
