@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using Helpers;
-using SandBox.ViewModelCollection.MobilePartyTracker;
+using SandBox.ViewModelCollection.Map;
 using StoryMode.Quests.FirstPhase;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
@@ -26,7 +25,7 @@ namespace MainQuestNoble
         private static MainQuestNobleVM _mainQuestNobleVM;
 
         // Get the quest noble after talking to any non-quest noble.
-        [HarmonyPatch(typeof(BannerInvestigationQuest), "talk_with_any_noble_condition")]
+        [HarmonyPatch(typeof(BannerInvestigationQuest), "talk_with_any_noble_continue_condition")]
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
@@ -57,8 +56,8 @@ namespace MainQuestNoble
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(MobilePartyTrackerVM), MethodType.Constructor, new Type[] { typeof(Camera), typeof(Action<Vec2>) })]
-        public static void Postfix2(MobilePartyTrackerVM __instance, Camera ____mapCamera, Action<Vec2> ____fastMoveCameraToPosition)
+        [HarmonyPatch(typeof(MapMobilePartyTrackerVM), MethodType.Constructor, new Type[] { typeof(Camera), typeof(Action<Vec2>) })]
+        public static void Postfix2(MapMobilePartyTrackerVM __instance, Camera ____mapCamera, Action<Vec2> ____fastMoveCameraToPosition)
         {
             _mainQuestNobleVM = new MainQuestNobleVM(__instance, ____mapCamera, ____fastMoveCameraToPosition);
             _mainQuestNobleVM.PropertyChangedWithValue += OnViewModelPropertyChangedWithValue;

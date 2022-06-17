@@ -1,4 +1,4 @@
-﻿using SandBox.ViewModelCollection.MobilePartyTracker;
+﻿using SandBox.ViewModelCollection.Map;
 using System;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
@@ -11,7 +11,7 @@ namespace MainQuestNoble
 {
     public class MainQuestNobleVM : ViewModel
     {
-        private MobilePartyTrackerVM _mobilePartyTrackerVM;
+        private MapMobilePartyTrackerVM _mapMobilePartyTrackerVM;
         private Camera _mapCamera;
         private Action<Vec2> _fastMoveCameraToPosition;
         private MobileParty _partyToTrack;
@@ -43,9 +43,9 @@ namespace MainQuestNoble
             }
         }
 
-        public MainQuestNobleVM(MobilePartyTrackerVM mobilePartyTrackerVM, Camera mapCamera, Action<Vec2> fastMoveCameraToPosition)
+        public MainQuestNobleVM(MapMobilePartyTrackerVM mapMobilePartyTrackerVM, Camera mapCamera, Action<Vec2> fastMoveCameraToPosition)
         {
-            _mobilePartyTrackerVM = mobilePartyTrackerVM;
+            _mapMobilePartyTrackerVM = mapMobilePartyTrackerVM;
             _mapCamera = mapCamera;
             _fastMoveCameraToPosition = fastMoveCameraToPosition;
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, new Action<MobileParty, PartyBase>(OnPartyDestroyed));
@@ -91,24 +91,24 @@ namespace MainQuestNoble
 
         private void RemoveAndAdd(MobileParty party, Army army)
         {
-            for (int i = 0; i < _mobilePartyTrackerVM.Trackers.Count; i++)
+            for (int i = 0; i < _mapMobilePartyTrackerVM.Trackers.Count; i++)
             {
-                if (!Clan.PlayerClan.WarPartyComponents.Contains(_mobilePartyTrackerVM.Trackers[i].TrackedParty?.WarPartyComponent))
+                if (!Clan.PlayerClan.WarPartyComponents.Contains(_mapMobilePartyTrackerVM.Trackers[i].TrackedParty?.WarPartyComponent))
                 {
-                    _mobilePartyTrackerVM.Trackers.RemoveAt(i);
+                    _mapMobilePartyTrackerVM.Trackers.RemoveAt(i);
                 }
             }
-            MobilePartyTrackItemVM mobilePartyTrackItemVM = _mobilePartyTrackerVM.Trackers.FirstOrDefault((MobilePartyTrackItemVM t) => Clan.PlayerClan.Kingdom == null || (Clan.PlayerClan.Kingdom != null && !Clan.PlayerClan.Kingdom.Armies.Contains(t.TrackedArmy)));
-            _mobilePartyTrackerVM.Trackers.Remove(mobilePartyTrackItemVM);
+            MobilePartyTrackItemVM mobilePartyTrackItemVM = _mapMobilePartyTrackerVM.Trackers.FirstOrDefault((MobilePartyTrackItemVM t) => Clan.PlayerClan.Kingdom == null || (Clan.PlayerClan.Kingdom != null && !Clan.PlayerClan.Kingdom.Armies.Contains(t.TrackedArmy)));
+            _mapMobilePartyTrackerVM.Trackers.Remove(mobilePartyTrackItemVM);
             if (party != null)
             {
                 if (army == null || (army != null && !army.LeaderPartyAndAttachedParties.Contains(party)))
                 {
-                    _mobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(party, _mapCamera, _fastMoveCameraToPosition));
+                    _mapMobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(party, _mapCamera, _fastMoveCameraToPosition));
                 }
                 else
                 {
-                    _mobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(army, _mapCamera, _fastMoveCameraToPosition));
+                    _mapMobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(army, _mapCamera, _fastMoveCameraToPosition));
                 }
             }
         }
