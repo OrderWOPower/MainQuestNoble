@@ -110,7 +110,7 @@ namespace MainQuestNoble
             if (_hasTalkedToAnyNoble)
             {
                 InformationManager.DisplayMessage(new InformationMessage("Stopped tracking positions of main quest nobles!"));
-                InformationManager.DisplayMessage(new InformationMessage(_partyToTrack != null ? "Started tracking position of " + _nobleName + "!" : "Failed to track position of " + _nobleName + "!"));
+                InformationManager.DisplayMessage(new InformationMessage((_partyToTrack != null ? "Started tracking position of " : "Failed to track position of ") + _nobleName + "!"));
                 _hasTalkedToAnyNoble = false;
             }
             else if (_hasTalkedToQuestNoble)
