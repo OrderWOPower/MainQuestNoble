@@ -88,7 +88,7 @@ namespace MainQuestNoble
             }
         }
 
-        public override void RegisterEvents() => CampaignEvents.ConversationEnded.AddNonSerializedListener(this, new Action<CharacterObject>(OnConversationEnded));
+        public override void RegisterEvents() => CampaignEvents.ConversationEnded.AddNonSerializedListener(this, new Action<IEnumerable<CharacterObject>>(OnConversationEnded));
 
         public override void SyncData(IDataStore dataStore)
         {
@@ -105,7 +105,7 @@ namespace MainQuestNoble
 
         // If a quest noble can be tracked, start tracking the quest noble after talking to any non-quest noble. If not, do nothing.
         // Stop tracking the quest noble after talking to any quest noble.
-        private void OnConversationEnded(CharacterObject character)
+        private void OnConversationEnded(IEnumerable<CharacterObject> character)
         {
             if (_hasTalkedToAnyNoble)
             {

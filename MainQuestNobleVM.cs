@@ -102,7 +102,7 @@ namespace MainQuestNoble
             _mapMobilePartyTrackerVM.Trackers.Remove(mobilePartyTrackItemVM);
             if (party != null)
             {
-                if (army == null || (army != null && !army.LeaderPartyAndAttachedParties.Contains(party)))
+                if (army == null || (army != null && !army.DoesLeaderPartyAndAttachedPartiesContain(party)))
                 {
                     _mapMobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(party, _mapCamera, _fastMoveCameraToPosition));
                 }
