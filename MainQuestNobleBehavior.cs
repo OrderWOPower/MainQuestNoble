@@ -97,9 +97,13 @@ namespace MainQuestNoble
                 dataStore.SyncData("_partyToTrack", ref _partyToTrack);
                 dataStore.SyncData("_armyToTrack", ref _armyToTrack);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                InformationManager.DisplayMessage(new InformationMessage(ex.Message + "\r\n" + ex.StackTrace));
+                if (dataStore.IsLoading)
+                {
+                    MethodBase method = MethodBase.GetCurrentMethod();
+                    InformationManager.DisplayMessage(new InformationMessage(method.DeclaringType.FullName + "." + method.Name + ": Error loading save file!"));
+                }
             }
         }
 
