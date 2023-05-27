@@ -20,11 +20,13 @@ namespace MainQuestNoble
         public MobileParty PartyToTrack
         {
             get => _partyToTrack;
+
             set
             {
                 if (value != _partyToTrack)
                 {
                     _partyToTrack = value;
+
                     OnPropertyChangedWithValue(value, "PartyToTrack");
                 }
             }
@@ -33,11 +35,13 @@ namespace MainQuestNoble
         public Army ArmyToTrack
         {
             get => _armyToTrack;
+
             set
             {
                 if (value != _armyToTrack)
                 {
                     _armyToTrack = value;
+
                     OnPropertyChangedWithValue(value, "ArmyToTrack");
                 }
             }
@@ -48,6 +52,7 @@ namespace MainQuestNoble
             _mapMobilePartyTrackerVM = mapMobilePartyTrackerVM;
             _mapCamera = mapCamera;
             _fastMoveCameraToPosition = fastMoveCameraToPosition;
+
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, new Action<MobileParty, PartyBase>(OnPartyDestroyed));
             CampaignEvents.OnPartyDisbandedEvent.AddNonSerializedListener(this, new Action<MobileParty, Settlement>(OnPartyDisbanded));
             CampaignEvents.ArmyDispersed.AddNonSerializedListener(this, new Action<Army, Army.ArmyDispersionReason, bool>(OnArmyDispersed));
@@ -57,6 +62,7 @@ namespace MainQuestNoble
         {
             PartyToTrack = partyToTrack;
             ArmyToTrack = armyToTrack;
+
             Init();
         }
 
@@ -65,6 +71,7 @@ namespace MainQuestNoble
             if (mobileParty == PartyToTrack)
             {
                 PartyToTrack = null;
+
                 Init();
             }
         }
@@ -74,6 +81,7 @@ namespace MainQuestNoble
             if (disbandedParty == PartyToTrack)
             {
                 PartyToTrack = null;
+
                 Init();
             }
         }
@@ -83,6 +91,7 @@ namespace MainQuestNoble
             if (army == ArmyToTrack)
             {
                 ArmyToTrack = null;
+
                 Init();
             }
         }
@@ -91,6 +100,10 @@ namespace MainQuestNoble
 
         private void RemoveAndAdd(MobileParty party, Army army)
         {
+            MobilePartyTrackItemVM mobilePartyTrackItemVM = _mapMobilePartyTrackerVM.Trackers.FirstOrDefault(t => Clan.PlayerClan.Kingdom == null || (Clan.PlayerClan.Kingdom != null && !Clan.PlayerClan.Kingdom.Armies.Contains(t.TrackedArmy)));
+
+            _mapMobilePartyTrackerVM.Trackers.Remove(mobilePartyTrackItemVM);
+
             for (int i = 0; i < _mapMobilePartyTrackerVM.Trackers.Count; i++)
             {
                 if (!Clan.PlayerClan.WarPartyComponents.Contains(_mapMobilePartyTrackerVM.Trackers[i].TrackedParty?.WarPartyComponent))
@@ -98,8 +111,7 @@ namespace MainQuestNoble
                     _mapMobilePartyTrackerVM.Trackers.RemoveAt(i);
                 }
             }
-            MobilePartyTrackItemVM mobilePartyTrackItemVM = _mapMobilePartyTrackerVM.Trackers.FirstOrDefault((MobilePartyTrackItemVM t) => Clan.PlayerClan.Kingdom == null || (Clan.PlayerClan.Kingdom != null && !Clan.PlayerClan.Kingdom.Armies.Contains(t.TrackedArmy)));
-            _mapMobilePartyTrackerVM.Trackers.Remove(mobilePartyTrackItemVM);
+
             if (party != null)
             {
                 if (army == null || (army != null && !army.DoesLeaderPartyAndAttachedPartiesContain(party)))

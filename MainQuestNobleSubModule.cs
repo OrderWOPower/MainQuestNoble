@@ -10,12 +10,13 @@ namespace MainQuestNoble
     {
         protected override void OnSubModuleLoad() => new Harmony("mod.bannerlord.mainquestnoble").PatchAll();
 
-        protected override void OnGameStart(Game game, IGameStarter gameStarter)
+        protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
             if (game.GameType is Campaign)
             {
-                CampaignGameStarter campaignStarter = (CampaignGameStarter)gameStarter;
-                campaignStarter.AddBehavior(new MainQuestNobleBehavior());
+                CampaignGameStarter campaignGameStarter = (CampaignGameStarter)gameStarterObject;
+
+                campaignGameStarter.AddBehavior(new MainQuestNobleBehavior());
             }
         }
     }

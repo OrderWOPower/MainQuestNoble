@@ -4,6 +4,7 @@ using SandBox.ViewModelCollection.Map;
 using StoryMode.Quests.FirstPhase;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using TaleWorlds.CampaignSystem;
@@ -17,20 +18,18 @@ namespace MainQuestNoble
     [HarmonyPatch]
     public class MainQuestNobleBehavior : CampaignBehaviorBase
     {
+        private static MainQuestNobleVM _mainQuestNobleVM;
         private static MobileParty _partyToTrack;
         private static Army _armyToTrack;
         private static string _nobleName;
-        private static bool _hasTalkedToAnyNoble;
-        private static bool _hasTalkedToQuestNoble;
-        private static MainQuestNobleVM _mainQuestNobleVM;
+        private static bool _hasTalkedToAnyNoble, _hasTalkedToQuestNoble;
 
-        // Get the quest noble after talking to any non-quest noble.
         [HarmonyPatch(typeof(BannerInvestigationQuest), "talk_with_any_noble_continue_condition")]
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            List<CodeInstruction> codesToInsert = new List<CodeInstruction>();
+            List<CodeInstruction> codes = instructions.ToList(), codesToInsert = new List<CodeInstruction>();
             int index = 0;
+
             for (int i = 0; i < codes.Count; i++)
             {
                 if (codes[i].operand is "HERO" && (MethodInfo)codes[i + 3].operand == AccessTools.Method(typeof(Hero), "get_CharacterObject"))
@@ -38,9 +37,12 @@ namespace MainQuestNoble
                     index = i + 4;
                 }
             }
+
+            // Get the quest noble after talking to any non-quest noble.
             codesToInsert.Add(new CodeInstruction(OpCodes.Dup));
             codesToInsert.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(MainQuestNobleBehavior), "TrackNoble", new Type[] { typeof(CharacterObject) })));
             codes.InsertRange(index, codesToInsert);
+
             return codes;
         }
 
@@ -64,13 +66,16 @@ namespace MainQuestNoble
             _mainQuestNobleVM.SetPartyAndArmyToTrack(_partyToTrack, _armyToTrack);
         }
 
-        // Set the party/army to track and the noble to track. Set the noble's name to display in the debug message.
         private static void TrackNoble(CharacterObject characterObject)
         {
             TextObject textObject = new TextObject("{HERO.LINK}", null);
+
             StringHelpers.SetCharacterProperties("HERO", characterObject, textObject);
+
+            // Set the party/army to track.
             _partyToTrack = characterObject.HeroObject.PartyBelongedTo;
             _armyToTrack = _partyToTrack?.Army;
+            // Set the noble's name to display in the debug message.
             _nobleName = textObject.ToString();
             _hasTalkedToAnyNoble = true;
             _hasTalkedToQuestNoble = false;
@@ -101,27 +106,29 @@ namespace MainQuestNoble
             {
                 if (dataStore.IsLoading)
                 {
-                    MethodBase method = MethodBase.GetCurrentMethod();
-                    InformationManager.DisplayMessage(new InformationMessage(method.DeclaringType.FullName + "." + method.Name + ": Error loading save file!"));
+                    InformationManager.DisplayMessage(new InformationMessage(MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + MethodBase.GetCurrentMethod().Name + ": Error loading save file!"));
                 }
             }
         }
 
-        // If a quest noble can be tracked, start tracking the quest noble after talking to any non-quest noble. If not, do nothing.
-        // Stop tracking the quest noble after talking to any quest noble.
         private void OnConversationEnded(IEnumerable<CharacterObject> character)
         {
             if (_hasTalkedToAnyNoble)
             {
                 InformationManager.DisplayMessage(new InformationMessage("Stopped tracking positions of main quest nobles!"));
+                // If a quest noble can be tracked, start tracking the quest noble after talking to any non-quest noble. If not, do nothing.
                 InformationManager.DisplayMessage(new InformationMessage((_partyToTrack != null ? "Started tracking position of " : "Failed to track position of ") + _nobleName + "!"));
+
                 _hasTalkedToAnyNoble = false;
             }
             else if (_hasTalkedToQuestNoble)
             {
+                // Stop tracking the quest noble after talking to any quest noble.
                 InformationManager.DisplayMessage(new InformationMessage("Stopped tracking positions of main quest nobles!"));
+
                 _hasTalkedToQuestNoble = false;
             }
+
             _mainQuestNobleVM.SetPartyAndArmyToTrack(_partyToTrack, _armyToTrack);
         }
     }
