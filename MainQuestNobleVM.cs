@@ -11,9 +11,10 @@ namespace MainQuestNoble
 {
     public class MainQuestNobleVM : ViewModel
     {
-        private MapMobilePartyTrackerVM _mapMobilePartyTrackerVM;
-        private Camera _mapCamera;
-        private Action<Vec2> _fastMoveCameraToPosition;
+        private readonly MapMobilePartyTrackerVM _mapMobilePartyTrackerVM;
+        private readonly Camera _mapCamera;
+        private readonly Action<Vec2> _fastMoveCameraToPosition;
+
         private MobileParty _partyToTrack;
         private Army _armyToTrack;
 
@@ -100,27 +101,20 @@ namespace MainQuestNoble
 
         private void RemoveAndAdd(MobileParty party, Army army)
         {
-            MobilePartyTrackItemVM mobilePartyTrackItemVM = _mapMobilePartyTrackerVM.Trackers.FirstOrDefault(t => Clan.PlayerClan.Kingdom == null || (Clan.PlayerClan.Kingdom != null && !Clan.PlayerClan.Kingdom.Armies.Contains(t.TrackedArmy)));
+            MBBindingList<MobilePartyTrackItemVM> trackers = _mapMobilePartyTrackerVM.Trackers;
 
-            _mapMobilePartyTrackerVM.Trackers.Remove(mobilePartyTrackItemVM);
-
-            for (int i = 0; i < _mapMobilePartyTrackerVM.Trackers.Count; i++)
-            {
-                if (!Clan.PlayerClan.WarPartyComponents.Contains(_mapMobilePartyTrackerVM.Trackers[i].TrackedParty?.WarPartyComponent))
-                {
-                    _mapMobilePartyTrackerVM.Trackers.RemoveAt(i);
-                }
-            }
+            trackers.Remove(trackers.FirstOrDefault(t => !Clan.PlayerClan.WarPartyComponents.Contains(t.TrackedParty?.WarPartyComponent)));
+            trackers.Remove(trackers.FirstOrDefault(t => Clan.PlayerClan.Kingdom == null || (Clan.PlayerClan.Kingdom != null && !Clan.PlayerClan.Kingdom.Armies.Contains(t.TrackedArmy))));
 
             if (party != null)
             {
                 if (army == null || (army != null && !army.DoesLeaderPartyAndAttachedPartiesContain(party)))
                 {
-                    _mapMobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(party, _mapCamera, _fastMoveCameraToPosition));
+                    trackers.Add(new MobilePartyTrackItemVM(party, _mapCamera, _fastMoveCameraToPosition));
                 }
                 else
                 {
-                    _mapMobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(army, _mapCamera, _fastMoveCameraToPosition));
+                    trackers.Add(new MobilePartyTrackItemVM(army, _mapCamera, _fastMoveCameraToPosition));
                 }
             }
         }
