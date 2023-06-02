@@ -102,8 +102,9 @@ namespace MainQuestNoble
         private void RemoveAndAdd(MobileParty party, Army army)
         {
             MBBindingList<MobilePartyTrackItemVM> trackers = _mapMobilePartyTrackerVM.Trackers;
+            Clan playerClan = Clan.PlayerClan;
 
-            trackers.Remove(trackers.FirstOrDefault(t => (!Clan.PlayerClan.WarPartyComponents.Contains(t.TrackedParty?.WarPartyComponent)) && (Clan.PlayerClan.Kingdom == null || (Clan.PlayerClan.Kingdom != null && !Clan.PlayerClan.Kingdom.Armies.Contains(t.TrackedArmy)))));
+            trackers.Remove(trackers.FirstOrDefault(t => (!playerClan.WarPartyComponents.Contains(t.TrackedParty?.WarPartyComponent)) && (playerClan.Kingdom == null || (playerClan.Kingdom != null && !playerClan.Kingdom.Armies.Contains(t.TrackedArmy)))));
 
             if (party != null)
             {
