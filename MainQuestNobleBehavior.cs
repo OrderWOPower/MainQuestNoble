@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Engine;
@@ -24,31 +23,42 @@ namespace MainQuestNoble
         private static string _nobleName;
         private static bool _hasTalkedToAnyNoble, _hasTalkedToQuestNoble;
 
+        [HarmonyPostfix]
         [HarmonyPatch(typeof(BannerInvestigationQuest), "talk_with_any_noble_continue_condition")]
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        private static void Postfix1(bool ____allNoblesDead, Dictionary<Hero, bool> ____noblesToTalk)
         {
-            List<CodeInstruction> codes = instructions.ToList(), codesToInsert = new List<CodeInstruction>();
-            int index = 0;
+            TextObject textObject;
 
-            for (int i = 0; i < codes.Count; i++)
+            if (!____allNoblesDead)
             {
-                if (codes[i].operand is "HERO" && (MethodInfo)codes[i + 3].operand == AccessTools.Method(typeof(Hero), "get_CharacterObject"))
+                KeyValuePair<Hero, bool> keyValuePair;
+
+                textObject = new TextObject("{HERO.LINK}", null);
+
+                if (____noblesToTalk.Any(n => !n.Value && n.Key.IsAlive && n.Key.Culture == Hero.OneToOneConversationHero.Culture))
                 {
-                    index = i + 4;
+                    keyValuePair = ____noblesToTalk.First(n => !n.Value && n.Key.IsAlive && n.Key.Culture == Hero.OneToOneConversationHero.Culture);
                 }
+                else
+                {
+                    keyValuePair = ____noblesToTalk.First(n => !n.Value && n.Key.IsAlive);
+                }
+
+                StringHelpers.SetCharacterProperties("HERO", keyValuePair.Key.CharacterObject, textObject, false);
+
+                // Set the party/army to track.
+                _partyToTrack = keyValuePair.Key.CharacterObject.HeroObject.PartyBelongedTo;
+                _armyToTrack = _partyToTrack?.Army;
+                // Set the noble's name to display in the debug message.
+                _nobleName = textObject.ToString();
+                _hasTalkedToAnyNoble = true;
+                _hasTalkedToQuestNoble = false;
             }
-
-            // Get the quest noble after talking to any non-quest noble.
-            codesToInsert.Add(new CodeInstruction(OpCodes.Dup));
-            codesToInsert.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(MainQuestNobleBehavior), "TrackNoble", new Type[] { typeof(CharacterObject) })));
-            codes.InsertRange(index, codesToInsert);
-
-            return codes;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(BannerInvestigationQuest), "talk_with_quest_noble_consequence")]
-        private static void Postfix1()
+        private static void Postfix2()
         {
             _partyToTrack = null;
             _armyToTrack = null;
@@ -59,26 +69,11 @@ namespace MainQuestNoble
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(MapMobilePartyTrackerVM), MethodType.Constructor, new Type[] { typeof(Camera), typeof(Action<Vec2>) })]
-        public static void Postfix2(MapMobilePartyTrackerVM __instance, Camera ____mapCamera, Action<Vec2> ____fastMoveCameraToPosition)
+        public static void Postfix3(MapMobilePartyTrackerVM __instance, Camera ____mapCamera, Action<Vec2> ____fastMoveCameraToPosition)
         {
             _mainQuestNobleVM = new MainQuestNobleVM(__instance, ____mapCamera, ____fastMoveCameraToPosition);
             _mainQuestNobleVM.PropertyChangedWithValue += OnViewModelPropertyChangedWithValue;
             _mainQuestNobleVM.SetPartyAndArmyToTrack(_partyToTrack, _armyToTrack);
-        }
-
-        private static void TrackNoble(CharacterObject characterObject)
-        {
-            TextObject textObject = new TextObject("{HERO.LINK}", null);
-
-            StringHelpers.SetCharacterProperties("HERO", characterObject, textObject);
-
-            // Set the party/army to track.
-            _partyToTrack = characterObject.HeroObject.PartyBelongedTo;
-            _armyToTrack = _partyToTrack?.Army;
-            // Set the noble's name to display in the debug message.
-            _nobleName = textObject.ToString();
-            _hasTalkedToAnyNoble = true;
-            _hasTalkedToQuestNoble = false;
         }
 
         private static void OnViewModelPropertyChangedWithValue(object sender, PropertyChangedWithValueEventArgs e)

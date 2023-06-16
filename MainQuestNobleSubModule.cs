@@ -14,9 +14,7 @@ namespace MainQuestNoble
         {
             if (game.GameType is Campaign)
             {
-                CampaignGameStarter campaignGameStarter = (CampaignGameStarter)gameStarterObject;
-
-                campaignGameStarter.AddBehavior(new MainQuestNobleBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new MainQuestNobleBehavior());
             }
         }
     }
