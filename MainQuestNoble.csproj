@@ -72,7 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainQuestNobleBehavior.cs" />
+    <Compile Include="MainQuestNobleCampaignBehavior.cs" />
     <Compile Include="MainQuestNobleSubModule.cs" />
     <Compile Include="MainQuestNobleVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
