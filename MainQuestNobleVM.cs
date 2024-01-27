@@ -104,11 +104,11 @@ namespace MainQuestNoble
             MBBindingList<MobilePartyTrackItemVM> trackers = _mapMobilePartyTrackerVM.Trackers;
             Clan playerClan = Clan.PlayerClan;
 
-            trackers.Remove(trackers.FirstOrDefault(t => (!playerClan.WarPartyComponents.Contains(t.TrackedParty?.WarPartyComponent)) && (playerClan.Kingdom == null || (playerClan.Kingdom != null && !playerClan.Kingdom.Armies.Contains(t.TrackedArmy)))));
+            trackers.Remove(trackers.FirstOrDefault(t => (!playerClan.WarPartyComponents.Contains(t.TrackedParty?.WarPartyComponent)) && (playerClan.Kingdom == null || !playerClan.Kingdom.Armies.Contains(t.TrackedArmy))));
 
             if (party != null)
             {
-                if (army == null || (army != null && !army.DoesLeaderPartyAndAttachedPartiesContain(party)))
+                if (army == null || !army.DoesLeaderPartyAndAttachedPartiesContain(party))
                 {
                     trackers.Add(new MobilePartyTrackItemVM(party, _mapCamera, _fastMoveCameraToPosition));
                 }
