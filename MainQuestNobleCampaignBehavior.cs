@@ -5,7 +5,6 @@ using StoryMode.Quests.FirstPhase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Engine;
@@ -97,12 +96,9 @@ namespace MainQuestNoble
                 dataStore.SyncData("_partyToTrack", ref _partyToTrack);
                 dataStore.SyncData("_armyToTrack", ref _armyToTrack);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                if (dataStore.IsLoading)
-                {
-                    InformationManager.DisplayMessage(new InformationMessage(MethodBase.GetCurrentMethod().DeclaringType.FullName + "." + MethodBase.GetCurrentMethod().Name + ": Error loading save file!"));
-                }
+                InformationManager.DisplayMessage(new InformationMessage(ex.ToString()));
             }
         }
 
