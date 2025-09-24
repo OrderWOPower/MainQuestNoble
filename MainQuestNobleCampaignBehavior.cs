@@ -1,13 +1,12 @@
 ﻿using HarmonyLib;
 using Helpers;
-using SandBox.ViewModelCollection.Map;
+using SandBox.ViewModelCollection.Map.Tracker;
 using StoryMode.Quests.FirstPhase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
@@ -16,7 +15,8 @@ namespace MainQuestNoble
     [HarmonyPatch]
     public class MainQuestNobleCampaignBehavior : CampaignBehaviorBase
     {
-        private static MainQuestNobleVM _mainQuestNobleVM;
+        private static MapTrackerProvider _mapTrackerProvider;
+        private static object _trackerContainer;
         private static MobileParty _partyToTrack;
         private static Army _armyToTrack;
         private static string _nobleName;
@@ -67,24 +67,13 @@ namespace MainQuestNoble
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(MapMobilePartyTrackerVM), MethodType.Constructor, new Type[] { typeof(Camera), typeof(Action<Vec2>) })]
-        public static void Postfix3(MapMobilePartyTrackerVM __instance, Camera ____mapCamera, Action<Vec2> ____fastMoveCameraToPosition)
+        [HarmonyPatch(typeof(MapTrackerProvider), MethodType.Constructor)]
+        public static void Postfix3(MapTrackerProvider __instance, object ____trackerContainer)
         {
-            _mainQuestNobleVM = new MainQuestNobleVM(__instance, ____mapCamera, ____fastMoveCameraToPosition);
-            _mainQuestNobleVM.PropertyChangedWithValue += OnViewModelPropertyChangedWithValue;
-            _mainQuestNobleVM.SetPartyAndArmyToTrack(_partyToTrack, _armyToTrack);
-        }
+            _mapTrackerProvider = __instance;
+            _trackerContainer = ____trackerContainer;
 
-        private static void OnViewModelPropertyChangedWithValue(object sender, PropertyChangedWithValueEventArgs e)
-        {
-            if (e.PropertyName == "PartyToTrack")
-            {
-                _partyToTrack = (MobileParty)e.Value;
-            }
-            else if (e.PropertyName == "ArmyToTrack")
-            {
-                _armyToTrack = (Army)e.Value;
-            }
+            RemoveAndAdd(_partyToTrack, _armyToTrack);
         }
 
         public override void RegisterEvents() => CampaignEvents.ConversationEnded.AddNonSerializedListener(this, new Action<IEnumerable<CharacterObject>>(OnConversationEnded));
@@ -120,7 +109,32 @@ namespace MainQuestNoble
                 _hasTalkedToQuestNoble = false;
             }
 
-            _mainQuestNobleVM.SetPartyAndArmyToTrack(_partyToTrack, _armyToTrack);
+            RemoveAndAdd(_partyToTrack, _armyToTrack);
+        }
+
+        private static void RemoveAndAdd(MobileParty party, Army army)
+        {
+            AccessTools.Method(typeof(MapTrackerProvider), "ResetTrackers").Invoke(_mapTrackerProvider, null);
+
+            if (party != null)
+            {
+                Type typeofTrackerContainer = AccessTools.TypeByName("TrackerContainer");
+
+                if (army == null || !army.DoesLeaderPartyAndAttachedPartiesContain(party))
+                {
+                    if (!(bool)AccessTools.Method(typeofTrackerContainer, "HasTrackerFor").Invoke(_trackerContainer, new object[] { party }))
+                    {
+                        AccessTools.Method(typeofTrackerContainer, "AddTracker").Invoke(_trackerContainer, new object[] { new MapMobilePartyTrackItemVM(party) });
+                    }
+                }
+                else
+                {
+                    if (!(bool)AccessTools.Method(typeofTrackerContainer, "HasTrackerFor").Invoke(_trackerContainer, new object[] { army }))
+                    {
+                        AccessTools.Method(typeofTrackerContainer, "AddTracker").Invoke(_trackerContainer, new object[] { new MapArmyTrackItemVM(army) });
+                    }
+                }
+            }
         }
     }
 }
