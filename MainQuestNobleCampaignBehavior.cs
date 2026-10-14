@@ -1,10 +1,10 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HarmonyLib;
 using Helpers;
 using SandBox.GauntletUI.Map;
 using StoryMode.Quests.FirstPhase;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Library;
